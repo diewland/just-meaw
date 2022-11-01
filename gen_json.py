@@ -14,7 +14,7 @@ SHUFFLE_TIME = 99
 CONFIG = (
     # pattern
     (
-        ( "None",       6 ),
+        ( "Meaw",       6 ),
         ( "Luna",       3 ),
         ( "Artemis",    1 ),
     ),
@@ -26,13 +26,13 @@ CONFIG = (
     ),
     # hat
     (
-        ( "None",       6 ),
+        ( "Fur",        6 ),
         ( "Mini Hat",   3 ),
         ( "Crown",      1 ),
     ),
     # right
     (
-        ( "None",       6 ),
+        ( "Empty",      6 ),
         ( "Pawn",       3 ),
         ( "Candy",      1 ),
     ),
@@ -47,80 +47,31 @@ for i0, (patt, s0) in enumerate(CONFIG[0]):
                 copy = s0 * s1 * s2 * s3
                 code = "{}{}{}{}".format(i0, i1, i2, i3)
                 for i4 in range(0, copy):
-
-                    # TODO
-                    #print(i4+1, '/', copy, IMG.format(code))
-
                     # template
                     metadata = {
                       "name": "***",
                       "description": DESC,
-                      "image": "***",
+                      "image": IMG.format(code),
                       "attributes": [
-                        {
-                          "trait_type": "Volume",
-                          "value": "***",
-                        },
+                        { "trait_type": "Pattern",  "value": CONFIG[0][i0][0] },
+                        { "trait_type": "Eyes",     "value": CONFIG[1][i1][0] },
+                        { "trait_type": "Hat",      "value": CONFIG[2][i2][0] },
+                        { "trait_type": "Right",    "value": CONFIG[3][i3][0] },
                       ],
                       "compiler": ENGINE,
                     }
-
-                    # update data
-                    #metadata["name"] = "{} #{:02}".format(NAME, id)
-                    #metadata["image"] = IMG.format(id)
-                    #metadata["attributes"][0]["value"] = ".{:02}".format(id)
-
                     # add to chunk
                     chunk.append(metadata)
-
-pp(chunk)
-print(len(chunk))
-exit() # TODO
-
-# helper TODO remove ???
-def chunker(seq, size):
-    return (seq[pos:pos + size] for pos in range(0, len(seq), size))
-def now():
-    return format(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
-
-# build chunk
-chunk = []
-for id in range(0, MAX_SUPPLY):
-
-    # template
-    metadata = {
-      "name": "***",
-      "description": DESC,
-      "image": "***",
-      "attributes": [
-        {
-          "trait_type": "Volume",
-          "value": "***",
-        },
-      ],
-      "compiler": ENGINE,
-    }
-
-    # update data
-    metadata["name"] = "{} #{:02}".format(NAME, id)
-    metadata["image"] = IMG.format(id)
-    metadata["attributes"][0]["value"] = ".{:02}".format(id)
-
-    # add to chunk
-    chunk.append(metadata)
 
 # shuffle
 for rnd in range(1, SHUFFLE_TIME+1):
     random.shuffle(chunk)
-    # log
-    print("<{}> shuffle #{:02}".format(now(), rnd))
-    for cc in chunker(chunk, 25):
-        print('-'.join([ c['name'].split('#')[1] for c in cc ]))
-    print('')
+
+# update name
+for id, metadata in enumerate(chunk):
+    metadata["name"] = "{} #{}".format(NAME, id)
 
 # write file
 for id, metadata in enumerate(chunk):
     with open("./{}/{}.json".format(OUTPUT_DIR, id), "w") as f:
         json.dump(metadata, f, ensure_ascii=False)
-    # log
-    print("<{}> ID {:02} -> {}".format(now(), id, metadata['name']))
